@@ -1,0 +1,43 @@
+- name: Install apt available software
+  ansible.builtin.apt:
+    update_cache: yes
+    name: [
+      'firefox',
+      'google-chrome-stable',
+      'vim',
+      'nano',
+      'teams',
+      'git',
+      'helix-cli',
+      'code',
+      'python3',
+      'build-essential',
+      'clang',
+      'landscape-client',
+      'clamav',
+      'sssd-ad',
+      'sssd-tools',
+      'realmd',
+      'adcli',
+      'cifs-utils',
+      'libpam-mount'
+    ]
+    state: present
+
+- name: Install Slack as a snap
+  community.general.snap:
+    name: slack
+    classic: yes
+    state: present
+
+- name: Install Zoom deb package
+  ansible.builtin.apt:
+    deb: https://zoom.us/client/latest/zoom_amd64.deb
+  environment:
+    PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+- name: Install Nessus Agent deb package
+  ansible.builtin.apt:
+    deb: https://www.tenable.com/downloads/api/v1/public/pages/nessus-agents/downloads/13147/download?i_agree_to_tenable_license_agreement=true
+  environment:
+    PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

@@ -1,0 +1,48 @@
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: "{{ ansible_facts['product_serial']  | truncate(13, True, '') }}-u.{{ ad_domain['domain_name'] }}"
+
+- name: Add Windows group Domain Admins to sudoers
+  become: yes
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    line: '%domain\ admins   ALL=(ALL)       NOPASSWD: ALL'
+
+- name: Checking domain join status
+  command: /usr/sbin/realm list
+  register: ad_status
+  changed_when: false
+  ignore_errors: true
+
+- name: Domain configs and join {{ ad_domain['domain_name'] }}
+  block:
+    - name: Join Ubuntu workstation into Domain {{ ad_domain['domain_name'] }}
+      expect:
+        command: /usr/sbin/realm join -U {{ Join_User }} {{ ad_domain['domain_name'] }}
+        responses:
+          Password for *: "{{ Join_User_Pass }}"
+
+    - name: Allow user Login without FQDN
+      ansible.builtin.lineinfile:
+        backup: yes
+        state: present
+        dest: /etc/sssd/sssd.conf
+        regexp: '^{{ item.search }}'
+        line: '{{ item.replace }}'
+      with_items:
+        - { search: 'use_fully_qualified_names', replace: 'use_fully_qualified_names = False' }
+        - { search: 'fallback_homedir', replace: "fallback_homedir = {{ ad_domain['homedir_pattern'] }}"}
+        - { search: 'access_provider', replace: 'access_provider = ad'}
+      notify: Restart SSSD
+
+    - name: Add pam authentication to common-session
+      ansible.builtin.lineinfile:
+        path: "/etc/pam.d/common-session"
+        line: "session optional        pam_mkhomedir.so skel=/etc/skel umask=077"
+  when: ad_status.stdout == ""
+  ignore_errors: yes
+
+- name: Configure pam_mount
+  template:
+    src: templates/etc_security_pam_mount_conf_xml.j2
+    dest: /etc/security/pam_mount.conf.xml

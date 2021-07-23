@@ -1,0 +1,5 @@
+scheduled_pull:
+  working_directory: /var/lib/ansible/local
+  logfile: /var/log/ansible-pull.log
+  schedule: '* */8 * * *'
+  repo_url: https://sm-information-systems@dev.azure.com/sm-information-systems/ubuntuautopilot/_git/ubuntuautopilot

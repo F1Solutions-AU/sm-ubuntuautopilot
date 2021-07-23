@@ -1,0 +1,37 @@
+- name: Add Google's Chrome repository signing key to apt
+  become: yes
+  ansible.builtin.apt_key:
+    id: EB4C1BFD4F042F6DDDCCEC917721F63BD38B4796
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    state: present
+- name: Add Microsoft's repository signing key to apt
+  become: yes
+  ansible.builtin.apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+- name: Add Perforce's repository signing key to apt
+  become: yes
+  ansible.builtin.apt_key:
+    id: E58131C0AEA7B082C6DC4C937123CB760FF18869
+    url: https://package.perforce.com/perforce.pubkey
+    state: present
+- name: Add Google's Chrome repository into sources list
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: deb https://dl.google.com/linux/chrome/deb/ stable main
+    state: present
+- name: Add Microsoft's Teams repository into sources list
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: deb https://packages.microsoft.com/repos/ms-teams stable main
+    state: present
+- name: Add Microsoft's VS-Code repository into sources list
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: deb https://packages.microsoft.com/repos/code stable main
+    state: present
+- name: Add Perforce's repository into sources list
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: deb http://package.perforce.com/apt/ubuntu focal release
+    state: present

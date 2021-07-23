@@ -1,0 +1,34 @@
+- hosts: localhost
+  become: true
+
+  vars_files:
+    - variables/pull_setup.yml
+    - variables/system_setup.yml
+
+  vars_prompt:
+    - name: Join_User
+      prompt: Please enter the username with domain join privileges
+      private: yes
+      unsafe: yes
+
+    - name: Join_User_Pass
+      prompt: Please enter the domain join account's password
+      private: yes
+      unsafe: yes
+      
+  pre_tasks:
+    - name: Collect facts
+      ansible.builtin.setup:
+        gather_timeout: 10
+
+  tasks:
+    - include: tasks/repositories.yml
+    - include: tasks/packages.yml
+    - include: tasks/system_setup.yml
+    - include: tasks/pull_setup.yml
+
+  handlers:
+    - name: Restart SSSD
+      ansible.builtin.service:
+        name: sssd
+        state: restarted

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!DOCTYPE pam_mount SYSTEM "pam_mount.conf.xml.dtd">
+
+<pam_mount>
+
+	<debug enable="0" />
+
+	<!-- Volume definitions -->
+{% for mount in smb_mounts %}
+	<volume options="nodev,nosuid,dir_mode=0700,sec=ntlmssp,mfsymlinks,nobrl"
+		user="*"
+{% if mount.sgrp is defined %}
+		sgrp="{{ mount.sgrp }}"
+{% endif %}
+		server="{{ mount.server }}"
+		path="{{ mount.path }}"
+		mountpoint="{{ mount.mountpoint }}"
+		fstype="cifs"
+	/>
+{% endfor %}
+
+	<mntoptions allow="nosuid,nodev,loop,encryption,fsck,nonempty,allow_root,allow_other,noblk,credentials,vers" />
+	<mntoptions require="nosuid,nodev" />
+	<logout wait="0" hup="no" term="no" kill="no" />
+	<mkmountpoint enable="1" remove="true" />
+
+</pam_mount>

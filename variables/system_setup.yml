@@ -1,0 +1,12 @@
+ad_domain:
+  domain_name: seeingmachines.com
+  homedir_pattern: /home/%d/%u
+
+smb_mounts:
+  - server: sm.local
+    path: Public
+    mountpoint: ~/shares/public
+  - server: sm.local
+    path: fs4
+    mountpoint: ~/shares/o
+    sgrp: engineering
