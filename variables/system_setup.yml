@@ -1,5 +1,5 @@
 ad_domain:
-  domain_name: seeingmachines.com
+  domain_name: sm.local
   homedir_pattern: /home/%d/%u
 
 smb_mounts:
